@@ -19,50 +19,41 @@ public class TablePage {
     @FindBy(css = "#table2 th")
     public ElementsCollection columnHeaders;
 
-    @FindBy(css = "#table2 tr td:nth-child(1)")
-    public List<SelenideElement> lastNameColumn;
-
-    public void sort(String columnName) {
-        for(SelenideElement header : columnHeaders) {
-            if (header.getText().equals(columnName)) {
-                header.click();
-                break;
-            }
-        }
-    }
-
-    public void sort(int columnNum) {
-        columnHeaders.get(columnNum).click();
+    public void sort(Header headerName) {
+        columnHeaders.get(headerName.index - 1).click();
     }
 
     public void delete(String email) {
-        for (UserInfo user : userInfoList) {
-            if (user.email.text().equals(email)) {
-                user.delete();
-                break;
-            }
-        }
+        getUser(email).delete();
     }
 
     public void edit(String email) {
+        getUser(email).edit();
+    }
+
+    public ElementsCollection getColumn(Header headerName) { // starting with 1
+        return $$(String.format("#table2 tr td:nth-child(%d)", headerName.index));
+    }
+    
+    private UserInfo getUser(String userEmail) {
+        UserInfo neededUser = null;
         for (UserInfo user : userInfoList) {
-            if (user.email.text().equals(email)) {
-                user.edit();
+            if (user.email.text().equals(userEmail)) {
+                neededUser = user;
                 break;
             }
         }
+        return neededUser;
     }
+    
+    public enum Header {
+        lastName(1), firstName(2), email(3), due(4), website(5), action(6);
 
-    public ElementsCollection getColumn(int columnNum) {
-        return $$(String.format("#table2 tr td:nth-child(%s)", columnNum));
-    }
+        private int index;
 
-    public String [] getTexts(List<SelenideElement> elements) {
-        String [] texts = new String [elements.size()];
-        for (int i = 0; i < texts.length; i++) {
-            texts[i] = elements.get(i).getText();
-        }
-        return texts;
+         Header(int i) {
+             index = i;
+         }
     }
 
     public static class UserInfo extends ElementsContainer {

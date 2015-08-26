@@ -1,4 +1,3 @@
-import com.codeborne.selenide.testng.ScreenShooter;
 import core.TestBase;
 import helpers.ScreenShotListener;
 import org.testng.annotations.BeforeMethod;
@@ -8,11 +7,11 @@ import pages.TablePage;
 
 import java.util.Arrays;
 
-import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.CollectionCondition.texts;
+import static com.codeborne.selenide.Selenide.open;
 
 @Listeners(ScreenShotListener.class)
-public class PageObjectTest extends TestBase{
+public class PageObjectTest extends TestBase {
     private TablePage tablePage;
 
     @BeforeMethod
@@ -21,21 +20,38 @@ public class PageObjectTest extends TestBase{
     }
 
     @Test
-    public void tableTest() {
-        System.out.println(tablePage.table.toString());
-        System.out.println(tablePage.columnHeaders.toString());
-        for(TablePage.UserInfo user : tablePage.userInfoList) {
-            System.out.println(user.firstName.toString());
-        }
+    public void sortByLastNameTest() {
+        TablePage.Header lastName = TablePage.Header.lastName;
+        String[] texts = tablePage.getColumn(lastName).getTexts();
+        tablePage.sort(lastName);
+        Arrays.sort(texts);
+        tablePage.getColumn(lastName).shouldHave(texts(texts));
     }
 
     @Test
-    public void sortByLastNameTest() {
-        for(int i = 1; i <= tablePage.columnHeaders.size(); i++) {
-            String[] texts = tablePage.getColumn(i).getTexts();
-            Arrays.sort(texts);
-            tablePage.sort(i - 1);
-            tablePage.getColumn(i).shouldHave(texts(texts));
-        }
+    public void sortByFirstNameTest() {
+        TablePage.Header firstName = TablePage.Header.firstName;
+        String[] texts = tablePage.getColumn(firstName).getTexts();
+        tablePage.sort(firstName);
+        Arrays.sort(texts);
+        tablePage.getColumn(firstName).shouldHave(texts(texts));
+    }
+
+    @Test
+    public void sortByEmailTest() {
+        TablePage.Header email = TablePage.Header.email;
+        String[] texts = tablePage.getColumn(email).getTexts();
+        tablePage.sort(email);
+        Arrays.sort(texts);
+        tablePage.getColumn(email).shouldHave(texts(texts));
+    }
+
+    @Test
+    public void sortByWebSiteTest() {
+        TablePage.Header website = TablePage.Header.website;
+        String[] texts = tablePage.getColumn(website).getTexts();
+        tablePage.sort(website);
+        Arrays.sort(texts);
+        tablePage.getColumn(website).shouldHave(texts(texts));
     }
 }
